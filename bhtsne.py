@@ -2,7 +2,7 @@
     numpy wrapper for bh_tsne (https://github.com/lvdmaaten/bhtsne)
     Brian DeCost bdecost@andrew.cmu.edu
 """
-
+import os
 import re
 import struct
 import subprocess
@@ -12,6 +12,16 @@ import numpy as np
 # in the directory from which bh_tsne is run
 DATAFILE = 'data.dat'
 RESULTFILE = 'result.dat'
+TSNESOURCE = 'https://github.com/lvdmaaten/bhtsne'
+TSNEDIR = 'bhtsne'
+TSNE = os.path.join(TSNEDIR, 'bh_tsne')
+
+def build_bhtsne():
+    subprocess.call(['git', 'clone', TSNESOURCE, TSNEDIR])
+    os.chdir(TSNEDIR)
+    subprocess.call(['g++', 'sptree.cpp', 'tsne.cpp', '-o', 'bh_tsne', '-O2'])
+    os.chdir('..')
+    return
 
 def write_tsne_input(X, theta=0.5, perplexity=30, map_dims=2, max_iter=1000, seed=None):
     """ serialize 2D data matrix (numpy array) with t-SNE options to vdM's binary input format """
@@ -41,7 +51,7 @@ def read_tsne_results():
 
 def bh_tsne(X, perplexity=30, theta=0.5):
     write_tsne_input(X, perplexity=perplexity, theta=theta)
-    subprocess.call('./bh_tsne')
+    subprocess.call(TSNE)
     return read_tsne_results()
 
 def tsne_error(results):
@@ -56,10 +66,13 @@ def best_bh_tsne(X, perplexity=30, theta=0.5, n_iter=10):
     lowest_error = 1e9
     x_tsne = None
     for iteration in range(n_iter):
-        results = subprocess.check_output('./bh_tsne')
+        results = subprocess.check_output(TSNE)
         error = tsne_error(results)
         print('error is {}'.format(error))
         if error < lowest_error:
             lowest_error = error
             x_tsne = read_tsne_results()
     return x_tsne
+
+if not os.path.isfile(TSNE):
+    build_bhtsne()
