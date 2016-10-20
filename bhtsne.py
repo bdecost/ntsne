@@ -13,7 +13,7 @@ import numpy as np
 DATAFILE = 'data.dat'
 RESULTFILE = 'result.dat'
 TSNESOURCE = 'https://github.com/lvdmaaten/bhtsne'
-TSNEDIR = 'bhtsne'
+TSNEDIR = '.bhtsne'
 TSNE = os.path.join(TSNEDIR, 'bh_tsne')
 
 def build_bhtsne():
@@ -49,7 +49,7 @@ def read_tsne_results():
     x_tsne = np.array(x_tsne).reshape((n,md))
     return x_tsne
 
-def bh_tsne(X, perplexity=30, theta=0.5):
+def tsne(X, perplexity=30, theta=0.5):
     write_tsne_input(X, perplexity=perplexity, theta=theta)
     subprocess.call(TSNE)
     return read_tsne_results()
@@ -61,7 +61,7 @@ def tsne_error(results):
     error = min(errorstrings).split()[-1]
     return float(error)
 
-def best_bh_tsne(X, perplexity=30, theta=0.5, n_iter=10):
+def best_tsne(X, perplexity=30, theta=0.5, n_iter=10):
     write_tsne_input(X, perplexity=perplexity, theta=theta)
     lowest_error = 1e9
     x_tsne = None
@@ -75,4 +75,5 @@ def best_bh_tsne(X, perplexity=30, theta=0.5, n_iter=10):
     return x_tsne
 
 if not os.path.isfile(TSNE):
+    print('bh_tsne not found; cloning git repo')
     build_bhtsne()
