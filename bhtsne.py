@@ -17,10 +17,9 @@ TSNEDIR = '.bhtsne'
 TSNE = os.path.join(TSNEDIR, 'bh_tsne')
 
 def build_bhtsne():
+    """ clone and build lvdmaaten's bhtsne """
     subprocess.call(['git', 'clone', TSNESOURCE, TSNEDIR])
-    os.chdir(TSNEDIR)
-    subprocess.call(['g++', 'sptree.cpp', 'tsne.cpp', '-o', 'bh_tsne', '-O2'])
-    os.chdir('..')
+    subprocess.call(['g++', 'sptree.cpp', 'tsne.cpp', '-o', 'bh_tsne', '-O2'], cwd=TSNEDIR)
     return
 
 def write_tsne_input(X, theta=0.5, perplexity=30, map_dims=2, max_iter=1000, seed=None):
@@ -62,6 +61,7 @@ def tsne_error(results):
     return float(error)
 
 def best_tsne(X, perplexity=30, theta=0.5, n_iter=10):
+    """ run bh_tsne {n_iter} times and return results with lowest KL divergence """
     write_tsne_input(X, perplexity=perplexity, theta=theta)
     lowest_error = 1e9
     x_tsne = None
@@ -75,5 +75,5 @@ def best_tsne(X, perplexity=30, theta=0.5, n_iter=10):
     return x_tsne
 
 if not os.path.isfile(TSNE):
-    print('bh_tsne not found; cloning git repo')
+    print('bh_tsne not found; cloning from {}'.format(TSNESOURCE))
     build_bhtsne()
