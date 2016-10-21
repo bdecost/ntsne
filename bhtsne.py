@@ -32,7 +32,7 @@ def write_tsne_input(X, theta=0.5, perplexity=30, map_dims=2, max_iter=1000, see
         f.write(struct.pack('=d', perplexity))
         f.write(struct.pack('=i', map_dims))
         f.write(struct.pack('=i', max_iter))
-        f.write(X.tobytes())
+        f.write(X.tostring()) # ndarray.tobytes in python 3
 
         if seed is not None:
             f.write(struct.pack('=i', map_dims))
@@ -43,7 +43,9 @@ def read_tsne_results():
         n, = struct.unpack('=i', f.read(4))
         md, = struct.unpack('=i', f.read(4))
         sz = struct.calcsize('=d')
-        x_tsne = [xx[0] for xx in struct.iter_unpack('=d', f.read(sz*n*md))]
+        # x_tsne = [xx[0] for xx in struct.iter_unpack('=d', f.read(sz*n*md))]
+        buf = f.read()
+        x_tsne = [struct.unpack_from('=d', buf, offset) for offset in range(n*md)]
         
     x_tsne = np.array(x_tsne).reshape((n,md))
     return x_tsne
