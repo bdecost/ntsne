@@ -46,7 +46,7 @@ def write_tsne_input(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, m
         f.write(struct.pack('=d', perplexity))
         f.write(struct.pack('=i', map_dims))
         f.write(struct.pack('=i', max_iter))
-        f.write(X.tostring()) # ndarray.tobytes in python 3
+        f.write(X.tobytes()) 
 
         if seed is not None:
             f.write(struct.pack('=i', map_dims))
@@ -54,15 +54,13 @@ def write_tsne_input(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, m
 def read_tsne_results():
     """ load t-SNE results from vdM's binary results file format """
     with open(RESULTFILE, 'rb') as f:
-        n, = struct.unpack('=i', f.read(4))
-        md, = struct.unpack('=i', f.read(4))
+        n, = struct.unpack('=i', f.read(4))  # number of instances
+        md, = struct.unpack('=i', f.read(4)) # map dimensionality        
         sz = struct.calcsize('=d')
-        # x_tsne = [xx[0] for xx in struct.iter_unpack('=d', f.read(sz*n*md))]
-        buf = f.read()
-        x_tsne = [struct.unpack_from('=d', buf, sz*offset) for offset in range(n*md)]
+        x_tsne = [struct.unpack_from('=d', f.read(), sz*offset)
+                  for offset in range(n*md)]
         
-    x_tsne = np.array(x_tsne).reshape((n,md))
-    return x_tsne
+    return np.array(x_tsne).reshape((n,md))
 
 def tsne(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, max_iter=MAX_ITER, seed=SEED):
     """ simple wrapper function for applying bh_tsne to the data matrix X """
