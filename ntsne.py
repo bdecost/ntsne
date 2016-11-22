@@ -13,7 +13,7 @@ import numpy as np
 DATAFILE = 'data.dat'
 RESULTFILE = 'result.dat'
 TSNESOURCE = 'https://github.com/lvdmaaten/bhtsne'
-TSNEDIR = '.bhtsne'
+TSNEDIR = os.path.expanduser('~/.ntsne')
 TSNE = os.path.join(TSNEDIR, 'bh_tsne')
 
 def build_bhtsne():
