@@ -1,4 +1,4 @@
-""" bhtsne.py
+""" ntsne.py
     numpy wrapper for bh_tsne (https://github.com/lvdmaaten/bhtsne)
     Brian DeCost bdecost@andrew.cmu.edu
 """
