@@ -23,13 +23,20 @@ if TSNE is None:
     TSNEDIR = os.path.expanduser('~/.ntsne')
     TSNE = os.path.join(TSNEDIR, 'bh_tsne')
 
+# set default bh_tsne parameters
+THETA = 0.5
+PERPLEXITY = 30
+MAP_DIMS = 2
+MAX_ITER = 1000
+SEED = None
+    
 def build_bhtsne():
     """ clone and build lvdmaaten's bhtsne """
     subprocess.call(['git', 'clone', TSNESOURCE, TSNEDIR])
     subprocess.call(['g++', 'sptree.cpp', 'tsne.cpp', '-o', 'bh_tsne', '-O2'], cwd=TSNEDIR)
     return
 
-def write_tsne_input(X, theta=0.5, perplexity=30, map_dims=2, max_iter=1000, seed=None):
+def write_tsne_input(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, max_iter=MAX_ITER, seed=SEED):
     """ serialize 2D data matrix (numpy array) with t-SNE options to vdM's binary input format """
     with open(DATAFILE, 'wb') as f:
         n, d = X.shape
@@ -57,7 +64,8 @@ def read_tsne_results():
     x_tsne = np.array(x_tsne).reshape((n,md))
     return x_tsne
 
-def tsne(X, perplexity=30, theta=0.5):
+def tsne(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, max_iter=MAX_ITER, seed=SEED):
+    """ simple wrapper function for applying bh_tsne to the data matrix X """
     write_tsne_input(X, perplexity=perplexity, theta=theta)
     subprocess.call(TSNE)
     return read_tsne_results()
@@ -69,9 +77,10 @@ def tsne_error(results):
     error = min(errorstrings).split()[-1]
     return float(error)
 
-def best_tsne(X, perplexity=30, theta=0.5, n_iter=10):
+def best_tsne(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, max_iter=MAX_ITER, seed=SEED, n_iter=10):
     """ run bh_tsne {n_iter} times and return results with lowest KL divergence """
-    write_tsne_input(X, perplexity=perplexity, theta=theta)
+    write_tsne_input(X, theta=theta, perplexity=perplexity,
+                     map_dims=map_dims, max_iter=max_iter, seed=seed)
     lowest_error = 1e9
     x_tsne = None
     for iteration in range(n_iter):
