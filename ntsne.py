@@ -4,6 +4,7 @@
 """
 import os
 import re
+import shutil
 import struct
 import subprocess
 import numpy as np
@@ -13,8 +14,14 @@ import numpy as np
 DATAFILE = 'data.dat'
 RESULTFILE = 'result.dat'
 TSNESOURCE = 'https://github.com/lvdmaaten/bhtsne'
-TSNEDIR = os.path.expanduser('~/.ntsne')
-TSNE = os.path.join(TSNEDIR, 'bh_tsne')
+
+# check to see if bh_tsne in on system PATH or in the CWD;
+# if not, clone and build it in ~/.ntsne if necessary
+augmented_path = os.getenv('PATH') + ':{}'.format(os.getcwd())
+TSNE = shutil.which('bh_tsne', path=augmented_path)
+if TSNE is None:
+    TSNEDIR = os.path.expanduser('~/.ntsne')
+    TSNE = os.path.join(TSNEDIR, 'bh_tsne')
 
 def build_bhtsne():
     """ clone and build lvdmaaten's bhtsne """
