@@ -84,7 +84,7 @@ def tsne_error(results):
     return float(error)
 
 def best_tsne(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, max_iter=MAX_ITER, seed=SEED, n_repeats=10):
-    """ run bh_tsne {n_iter} times and return results with lowest KL divergence """
+    """ run bh_tsne {n_repeats} times and return results with lowest KL divergence """
     lowest_error = 1e9
     x_tsne = None
 
@@ -92,7 +92,7 @@ def best_tsne(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, max_iter
         write_tsne_input(X, theta=theta, perplexity=perplexity,
                          map_dims=map_dims, max_iter=max_iter, seed=seed, cwd=tmpdir)
         
-        for iteration in range(n_repeats):
+        for __ in range(n_repeats):
             results = subprocess.check_output(TSNE, cwd=tmpdir)
             error = tsne_error(results)
             if error < lowest_error:
