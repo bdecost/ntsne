@@ -68,7 +68,9 @@ def read_tsne_results(cwd=''):
 def tsne(X, theta=THETA, perplexity=PERPLEXITY, map_dims=MAP_DIMS, max_iter=MAX_ITER, seed=SEED):
     """ simple wrapper function for applying bh_tsne to the data matrix X """
     with tempfile.TemporaryDirectory() as tmpdir:
-        write_tsne_input(X, perplexity=perplexity, theta=theta, cwd=tmpdir)
+        write_tsne_input(X, theta=theta, perplexity=perplexity,
+                         map_dims=map_dims, max_iter=max_iter, seed=seed, cwd=tmpdir)
+
         subprocess.call(TSNE, cwd=tmpdir)
         x_tsne = read_tsne_results(cwd=tmpdir)
 
