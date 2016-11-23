@@ -1,8 +1,8 @@
-# ntsne.py # 
+# ntsne.py 
 
 a python3 numpy wrapper for `bh_tsne` ([https://github.com/lvdmaaten/bhtsne](https://github.com/lvdmaaten/bhtsne))
 
-## Usage ##
+## Usage
 `ntsne` uses [bh_tsne](https://github.com/lvdmaaten/bhtsne) via python's subprocess library.
 If `bh_tsne` is not on the system path or in the current working directory, `ntsne` will attempt to clone and compile the `bhtsne` binary under `~/.ntsne`.
 
